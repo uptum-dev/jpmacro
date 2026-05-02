@@ -1,0 +1,30 @@
+name: Monthly Data Refresh
+
+on:
+  schedule:
+    - cron: '0 1 5 * *'  # 毎月5日 AM1:00 UTC（MHLWは月末〜翌月初に公開）
+  workflow_dispatch:       # 手動実行も可能
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: MHLW実質賃金データを更新
+        run: npx tsx scripts/refresh/mhlw.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # 将来のデータソースはここに追加:
+      # - name: CPI物価データを更新
+      #   run: npx tsx scripts/refresh/cpi.ts
+      #   env:
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
