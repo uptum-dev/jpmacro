@@ -3,3 +3,13 @@ dist/
 .env
 *.log
 scripts/inspect_*.ts
+scripts/check_*.ts
+scripts/search_*.ts
+scripts/find_*.ts
+scripts/audit_*.ts
+scripts/debug_*.ts
+scripts/test_mhlw*.ts
+scripts/test_4*.ts
+scripts/test_api.ts
+scripts/final_audit.ts
+scripts/fix_*.ts

@@ -1,0 +1,48 @@
+services:
+  db:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: jpmacro
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: jpmacro
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jpmacro"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://jpmacro:${DB_PASSWORD}@db:5432/jpmacro
+      ESTAT_API_KEY: ${ESTAT_API_KEY}
+      X402_FACILITATOR_URL: ${X402_FACILITATOR_URL:-https://x402.org/facilitator}
+      X402_WALLET_ADDRESS: ${X402_WALLET_ADDRESS}
+      X402_NETWORK: ${X402_NETWORK:-base}
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  timescaledb_data:
+  caddy_data:
+  caddy_config:
