@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'
-import { getLatestWage, getRealWages, getIndustries } from '../db/queries.js'
+import { getLatestWage, getRealWages, getNominalWages, getIndustries } from '../db/queries.js'
 import { paywall } from '../middleware/x402.js'
 
 const app = new Hono()
@@ -66,6 +66,40 @@ app.get('/real', zValidator('query', realQuerySchema), async (c) => {
       source: 'e-stat',
       retrieved_at: latestRetrievedAt,
       base_year: 2010,
+      from,
+      to,
+      industry_code: industry ?? 'ALL',
+      count: rows.length,
+    },
+  })
+})
+
+// GET /v1/wages/nominal  — 2¢/call, 産業別名目賃金指数(2001-2014)
+const nominalQuerySchema = z.object({
+  from: ymSchema.optional(),
+  to: ymSchema.optional(),
+  industry: z.string().optional(),
+})
+
+app.use('/nominal', paywall('Japan nominal wage index by industry', 0.02))
+app.get('/nominal', zValidator('query', nominalQuerySchema), async (c) => {
+  const { from = '2001-01', to = '2014-12', industry } = c.req.valid('query')
+
+  const rows = await getNominalWages(from, to, industry)
+  const latestRetrievedAt = rows.at(-1)?.retrieved_at ?? null
+
+  return c.json({
+    data: rows.map((r) => ({
+      date: r.date,
+      industry_code: r.industry_code,
+      value: r.value,
+      is_preliminary: r.is_preliminary,
+    })),
+    meta: {
+      source: 'e-stat',
+      retrieved_at: latestRetrievedAt,
+      base_year: 2010,
+      coverage: '2001-01 to 2014-12',
       from,
       to,
       industry_code: industry ?? 'ALL',

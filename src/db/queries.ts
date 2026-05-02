@@ -54,6 +54,42 @@ export async function getRealWages(
   `
 }
 
+export async function getNominalWages(
+  from: string,
+  to: string,
+  industry?: string,
+): Promise<WageRow[]> {
+  if (industry) {
+    return sql<WageRow[]>`
+      SELECT
+        TO_CHAR(date, 'YYYY-MM') AS date,
+        industry_code, wage_type, value::float AS value,
+        base_year, is_preliminary, source,
+        retrieved_at::text AS retrieved_at
+      FROM wage_data
+      WHERE
+        wage_type = 'nominal'
+        AND industry_code = ${industry}
+        AND date >= ${from + '-01'}
+        AND date <= ${to + '-01'}
+      ORDER BY date ASC
+    `
+  }
+  return sql<WageRow[]>`
+    SELECT
+      TO_CHAR(date, 'YYYY-MM') AS date,
+      industry_code, wage_type, value::float AS value,
+      base_year, is_preliminary, source,
+      retrieved_at::text AS retrieved_at
+    FROM wage_data
+    WHERE
+      wage_type = 'nominal'
+      AND date >= ${from + '-01'}
+      AND date <= ${to + '-01'}
+    ORDER BY date ASC, industry_code ASC
+  `
+}
+
 export async function getIndustries(): Promise<IndustryRow[]> {
   return sql<IndustryRow[]>`SELECT code, name_en, name_ja FROM industries ORDER BY code`
 }

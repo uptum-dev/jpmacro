@@ -18,7 +18,8 @@ app.get('/', (c) =>
     version: '1.0.0',
     endpoints: [
       'GET /v1/wages/latest      — latest real wage index ($0.03/call)',
-      'GET /v1/wages/real        — time-series real wage index ($0.02/call)',
+      'GET /v1/wages/real        — real wage index time-series, 1952-present, ALL+Manufacturing ($0.02/call)',
+      'GET /v1/wages/nominal     — nominal wage index by industry, 2001-2014, 84 industries ($0.02/call)',
       'GET /v1/wages/industries  — industry code reference (free)',
     ],
   }),
