@@ -10,12 +10,6 @@ CREATE TABLE IF NOT EXISTS wage_data (
   PRIMARY KEY (date, industry_code, wage_type)
 );
 
-SELECT create_hypertable(
-  'wage_data', 'date',
-  chunk_time_interval => INTERVAL '1 month',
-  if_not_exists => TRUE
-);
-
 CREATE TABLE IF NOT EXISTS industries (
   code    VARCHAR(10)  PRIMARY KEY,
   name_en VARCHAR(100) NOT NULL,
