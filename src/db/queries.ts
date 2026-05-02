@@ -50,6 +50,7 @@ export async function getRealWages(
       AND industry_code = ${code}
       AND date >= ${from + '-01'}
       AND date <= ${to + '-01'}
+      AND value IS NOT NULL
     ORDER BY date ASC
   `
 }
@@ -72,6 +73,7 @@ export async function getNominalWages(
         AND industry_code = ${industry}
         AND date >= ${from + '-01'}
         AND date <= ${to + '-01'}
+        AND value IS NOT NULL
       ORDER BY date ASC
     `
   }
@@ -86,6 +88,7 @@ export async function getNominalWages(
       wage_type = 'nominal'
       AND date >= ${from + '-01'}
       AND date <= ${to + '-01'}
+      AND value IS NOT NULL
     ORDER BY date ASC, industry_code ASC
   `
 }
