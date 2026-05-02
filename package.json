@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc",
+    "compile": "tsc",
     "refresh": "tsx scripts/refresh.ts",
     "import:mhlw": "tsx scripts/import_mhlw.ts",
     "migrate": "tsx scripts/migrate.ts",
