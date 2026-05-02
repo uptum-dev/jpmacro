@@ -22,23 +22,26 @@ CREATE TABLE IF NOT EXISTS industries (
   name_ja VARCHAR(100) NOT NULL
 );
 
+-- 日本標準産業分類（2007年11月改定）に準拠 / Japanese Standard Industry Classification (2007 rev.)
 INSERT INTO industries (code, name_en, name_ja) VALUES
-  ('ALL',  'All Industries',                          '産業計'),
-  ('A',    'Agriculture, Forestry and Fisheries',     '農業，林業，漁業'),
-  ('B',    'Mining and Quarrying',                    '鉱業，採石業，砂利採取業'),
-  ('C',    'Manufacturing',                           '製造業'),
-  ('D',    'Electricity, Gas, Heat and Water Supply', '電気・ガス・熱供給・水道業'),
-  ('E',    'Information and Communications',          '情報通信業'),
-  ('F',    'Transport and Postal Services',           '運輸業，郵便業'),
-  ('G',    'Wholesale and Retail Trade',              '卸売業，小売業'),
-  ('H',    'Finance and Insurance',                   '金融業，保険業'),
-  ('I',    'Real Estate and Goods Rental',            '不動産業，物品賃貸業'),
-  ('J',    'Scientific and Technical Services',       '学術研究，専門・技術サービス業'),
-  ('K',    'Accommodations and Food Services',        '宿泊業，飲食サービス業'),
-  ('L',    'Living Services and Entertainment',       '生活関連サービス業，娯楽業'),
-  ('M',    'Education and Learning Support',          '教育，学習支援業'),
-  ('N',    'Medical, Health Care and Welfare',        '医療，福祉'),
-  ('O',    'Compound Services',                       '複合サービス事業'),
-  ('P',    'Other Services',                          'サービス業（他に分類されないもの）'),
-  ('Q',    'Government',                              '公務（他に分類されるものを除く）')
+  ('ALL', 'All Industries',                          '産業計'),
+  ('A',   'Agriculture and Forestry',                '農業，林業'),
+  ('B',   'Fisheries',                               '漁業'),
+  ('C',   'Mining and Quarrying',                    '鉱業，採石業，砂利採取業'),
+  ('D',   'Construction',                            '建設業'),
+  ('E',   'Manufacturing',                           '製造業'),
+  ('F',   'Electricity, Gas, Heat and Water Supply', '電気・ガス・熱供給・水道業'),
+  ('G',   'Information and Communications',          '情報通信業'),
+  ('H',   'Transport and Postal Services',           '運輸業，郵便業'),
+  ('I',   'Wholesale and Retail Trade',              '卸売業，小売業'),
+  ('J',   'Finance and Insurance',                   '金融業，保険業'),
+  ('K',   'Real Estate and Goods Rental',            '不動産業，物品賃貸業'),
+  ('L',   'Scientific and Technical Services',       '学術研究，専門・技術サービス業'),
+  ('M',   'Accommodations and Food Services',        '宿泊業，飲食サービス業'),
+  ('N',   'Living Services and Entertainment',       '生活関連サービス業，娯楽業'),
+  ('O',   'Education and Learning Support',          '教育，学習支援業'),
+  ('P',   'Medical, Health Care and Welfare',        '医療，福祉'),
+  ('Q',   'Compound Services',                       '複合サービス事業'),
+  ('R',   'Other Services',                          'サービス業（他に分類されないもの）'),
+  ('S',   'Government',                              '公務（他に分類されるものを除く）')
 ON CONFLICT (code) DO NOTHING;
