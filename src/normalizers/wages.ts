@@ -10,47 +10,44 @@ export interface WageRecord {
   source: string
 }
 
-/**
- * e-Stat の月次時刻ラベル "2024年1月" → "2024-01-01"
- */
-function parseEstatDate(label: string): string | null {
-  const m = label.match(/(\d{4})年(\d{1,2})月/)
-  if (!m) return null
-  const year = m[1]
-  const month = m[2].padStart(2, '0')
+// @time = "YYYY000000", @cat01 = "101"-"112"(月次のみ使用)
+// 年平均(91)・四半期(92-97)・特殊(120)はスキップ
+function parseEstatDate(timeCode: string, monthCode: string): string | null {
+  const year = timeCode.slice(0, 4)
+  if (!/^\d{4}$/.test(year)) return null
+
+  const code = parseInt(monthCode, 10)
+  if (code < 101 || code > 112) return null
+
+  const month = String(code - 100).padStart(2, '0')
   return `${year}-${month}-01`
 }
 
-/**
- * e-Stat 産業コードを英字コードにマッピング（統計表固有の数値コード → 英字）
- * 実際の e-Stat @cat01 コードは統計ごとに異なるため、
- * ここでは "産業計" を ALL、それ以外はそのまま保持する簡易実装。
- * statsDataId 0003138104 の実運用では @cat01 属性が産業分類を示す。
- */
-function mapIndustryCode(raw: string, label?: string): string {
-  if (!raw || raw === '0' || (label && label.includes('産業計'))) return 'ALL'
-  return raw
+// @cat02: TL=産業計, E=製造業 → シンプルなコードに変換
+function mapIndustryCode(cat02: string): string {
+  if (!cat02 || cat02 === 'TL') return 'ALL'
+  return cat02  // E, etc.
 }
 
 export function normalizeWages(
   records: EstatValue[],
   wageType: 'real' | 'nominal' = 'real',
-  baseYear = 2020,
+  baseYear = 2010, // 平成22年(2010年)=100
 ): WageRecord[] {
   const results: WageRecord[] = []
 
   for (const rec of records) {
-    // 時間軸は "@time" または時間軸ラベル相当のキー
-    const timeLabel = rec['@time'] ?? rec['time'] ?? ''
-    const date = parseEstatDate(timeLabel)
+    // 指数のみ使用（前年比 tab=3005 はスキップ）
+    if (rec['@tab'] !== '3003') continue
+
+    // 5人以上(cat03=T)、就業形態計(cat04=00)のみ
+    if (rec['@cat03'] !== 'T' || rec['@cat04'] !== '00') continue
+
+    const date = parseEstatDate(rec['@time'] ?? '', rec['@cat01'] ?? '')
     if (!date) continue
 
-    // 産業コード
-    const industryRaw = rec['@cat01'] ?? rec['cat01'] ?? ''
-    const industryLabel = rec['@cat01_label'] ?? ''
-    const industry_code = mapIndustryCode(industryRaw, industryLabel)
+    const industry_code = mapIndustryCode(rec['@cat02'] ?? '')
 
-    // 値文字列: 末尾 "p" は速報値
     const rawValue = (rec['$'] ?? '').trim()
     const is_preliminary = rawValue.toLowerCase().endsWith('p')
     const numStr = rawValue.replace(/[^0-9.\-]/g, '')

@@ -5,6 +5,13 @@ import wagesRoutes from './routes/wages.js'
 
 const app = new Hono()
 
+app.use('*', async (c, next) => {
+  await next()
+  if (!c.res.headers.get('Content-Type')?.includes('charset')) {
+    c.res.headers.set('Content-Type', 'application/json; charset=utf-8')
+  }
+})
+
 app.get('/', (c) =>
   c.json({
     name: 'jpmacro',

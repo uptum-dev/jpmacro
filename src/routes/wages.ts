@@ -65,7 +65,7 @@ app.get('/real', zValidator('query', realQuerySchema), async (c) => {
     meta: {
       source: 'e-stat',
       retrieved_at: latestRetrievedAt,
-      base_year: 2020,
+      base_year: 2010,
       from,
       to,
       industry_code: industry ?? 'ALL',
