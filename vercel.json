@@ -1,3 +1,5 @@
 {
+  "buildCommand": "echo 'no build needed'",
+  "outputDirectory": ".",
   "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
 }
