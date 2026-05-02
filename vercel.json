@@ -1,8 +1,5 @@
 {
-  "buildCommand": "echo 'no build needed'",
-  "outputDirectory": ".",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/api/index" }
   ]
 }
