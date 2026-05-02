@@ -16,7 +16,7 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - run: npm ci
+      - run: npm install
 
       - name: MHLW実質賃金データを更新
         run: npx tsx scripts/refresh/mhlw.ts
