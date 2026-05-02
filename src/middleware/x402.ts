@@ -103,13 +103,13 @@ export function paywall(description: string, amountUsd: number): MiddlewareHandl
     const paymentHeader = c.req.header('X-PAYMENT')
 
     if (!paymentHeader) {
-      const url = c.req.url
+      const url = c.req.url.replace(/^http:\/\//, 'https://')
       return c.json(buildPaymentRequired(url, description, amountUsd), 402)
     }
 
     const result = await verifyAndSettle(
       paymentHeader,
-      c.req.url,
+      c.req.url.replace(/^http:\/\//, 'https://'),
       description,
       amountUsd,
     )
