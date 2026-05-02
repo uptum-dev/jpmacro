@@ -9,7 +9,7 @@ if (!walletAddress) throw new Error('X402_WALLET_ADDRESS is not set')
 
 // USDC on Base Sepolia / Base Mainnet
 const USDC_ADDRESS =
-  NETWORK === 'base-mainnet' || NETWORK === 'eip155:8453'
+  NETWORK === 'base' || NETWORK === 'eip155:8453'
     ? '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
     : '0x036CbD53842c5426634e7929541eC2318f3dCF7e'
 

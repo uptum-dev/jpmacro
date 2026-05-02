@@ -11,17 +11,19 @@
  * Usage: npx tsx scripts/test_payment.ts
  */
 import 'dotenv/config'
-import { createWalletClient, createPublicClient, http, publicActions } from 'viem'
+import { createWalletClient, http, publicActions } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { baseSepolia } from 'viem/chains'
-import { toClientEvmSigner } from '@x402/evm'
 import { createPaymentHeader, selectPaymentRequirements } from 'x402/client'
 
 const BASE_URL = `http://localhost:${process.env.PORT ?? 3000}`
-const ENDPOINT = '/v1/wages/real?from=2024-01&to=2024-06&industry=ALL'
+const ENDPOINT = '/v1/wages/real?from=2015-01&to=2015-06&industry=ALL'
 
 // 秘密鍵の確認
-const privateKey = process.env.TEST_WALLET_PRIVATE_KEY as `0x${string}` | undefined
+const rawKey = process.env.TEST_WALLET_PRIVATE_KEY
+const privateKey = rawKey
+  ? (rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`) as `0x${string}`
+  : undefined
 if (!privateKey) {
   console.error('ERROR: TEST_WALLET_PRIVATE_KEY が .env に設定されていません')
   console.error('  例: TEST_WALLET_PRIVATE_KEY=0xあなたのBase Sepoliaテストウォレット秘密鍵')
@@ -38,16 +40,16 @@ console.log(`Endpoint: ${ENDPOINT}`)
 console.log()
 
 // viemウォレットクライアントを作成
+// createPaymentHeader は LocalAccount(isAccount) または WalletClient(isSignerWallet) を受け付ける
+// WalletClient は chain + transport を持つため isSignerWallet を満たす
 const account = privateKeyToAccount(privateKey)
 console.log(`Wallet address: ${account.address}`)
 
-const walletClient = createWalletClient({
+const signer = createWalletClient({
   account,
   chain: baseSepolia,
   transport: http(),
 }).extend(publicActions)
-
-const signer = toClientEvmSigner(account, walletClient)
 
 // Step 1: 支払いなしでリクエスト → 402を期待
 console.log('\n[Step 1] Requesting without payment...')
