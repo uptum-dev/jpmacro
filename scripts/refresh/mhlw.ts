@@ -59,12 +59,17 @@ function parseMhlwSheet(ws: XLSX.WorkSheet, isPrelim: boolean) {
   return results
 }
 
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+
 async function tryFetch(year: number, month: number, preliminary: boolean) {
   const { url, yymm, sfx } = buildUrl(year, month, preliminary)
-  const head = await fetch(url, { method: 'HEAD' }).catch(() => null)
-  if (!head || head.status !== 200) return null
+  const head = await fetch(url, { method: 'HEAD', headers: { 'User-Agent': UA } }).catch(() => null)
+  if (!head || head.status !== 200) {
+    if (head) console.log(`  SKIP ${yymm}${sfx}: HTTP ${head.status}`)
+    return null
+  }
 
-  const res = await fetch(url)
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
   const buf = Buffer.from(await res.arrayBuffer())
   const wb = XLSX.read(buf, { type: 'buffer' })
   const ws = wb.Sheets['実質賃金']
